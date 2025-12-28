@@ -1,6 +1,6 @@
 # Simple RAG App
 
-A single-user, dark-themed Retrieval-Augmented Generation (RAG) application built with Flask, Tailwind CSS, ChromaDB, and OpenRouter.
+An open-source single-user, dark-themed Retrieval-Augmented Generation (RAG) application built with Flask, Tailwind CSS, ChromaDB, and OpenRouter. 
 
 ---
 
