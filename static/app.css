@@ -1,0 +1,11 @@
+/* Tiny additions; Tailwind does most of the work. */
+:root { color-scheme: dark; }
+::selection { background: rgba(99,102,241,0.35); }
+
+.glass {
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.soft-border { border: 1px solid rgba(148, 163, 184, 0.12); }

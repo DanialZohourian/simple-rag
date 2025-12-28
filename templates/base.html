@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{{ title or "RAG App" }}</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          boxShadow: {
+            'glow': '0 0 0 1px rgba(99,102,241,0.25), 0 10px 30px rgba(0,0,0,0.35)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100">
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute -top-32 left-1/2 -translate-x-1/2 h-96 w-[60rem] rounded-full blur-3xl opacity-20 bg-indigo-600"></div>
+    <div class="absolute top-40 right-10 h-72 w-72 rounded-full blur-3xl opacity-15 bg-cyan-500"></div>
+  </div>
+
+  <header class="relative">
+    <div class="max-w-6xl mx-auto px-6 pt-8">
+      <div class="flex items-center justify-between gap-4">
+        <div>
+          <div class="text-xl font-semibold tracking-tight">Simple RAG</div>
+          <div class="text-xs text-slate-400">Flask + ChromaDB + OpenRouter</div>
+        </div>
+
+        <nav class="flex gap-2">
+          {% set cur = request.path %}
+          <a href="{{ url_for('files_page') }}"
+             class="px-4 py-2 rounded-lg text-sm soft-border glass hover:shadow-glow transition
+                    {% if cur.startswith('/files') %} ring-1 ring-indigo-500/40 {% endif %}">
+            Files
+          </a>
+          <a href="{{ url_for('ask_page') }}"
+             class="px-4 py-2 rounded-lg text-sm soft-border glass hover:shadow-glow transition
+                    {% if cur.startswith('/ask') %} ring-1 ring-indigo-500/40 {% endif %}">
+            Ask
+          </a>
+          <a href="{{ url_for('history_page') }}"
+             class="px-4 py-2 rounded-lg text-sm soft-border glass hover:shadow-glow transition
+                    {% if cur.startswith('/history') %} ring-1 ring-indigo-500/40 {% endif %}">
+            History
+          </a>
+        </nav>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="mt-6 space-y-3">
+            {% for category, msg in messages %}
+              <div class="glass rounded-xl p-4 soft-border
+                          {% if category == 'error' %} border-red-500/30 {% else %} border-emerald-500/20 {% endif %}">
+                <div class="text-sm text-slate-200">{{ msg|safe }}</div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+    </div>
+  </header>
+
+  <main class="relative max-w-6xl mx-auto px-6 py-10">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="relative max-w-6xl mx-auto px-6 pb-10 text-xs text-slate-500">
+    Persistent storage: <span class="text-slate-400">data/</span> • Max upload: <span class="text-slate-400">200MB</span>
+  </footer>
+</body>
+</html>

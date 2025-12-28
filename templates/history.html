@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="glass rounded-2xl p-6 soft-border shadow-glow">
+  <div class="flex items-center justify-between gap-4">
+    <div>
+      <h2 class="text-lg font-semibold">History</h2>
+      <p class="text-sm text-slate-400 mt-1">Questions + answers + retrieved chunks (metadata included).</p>
+    </div>
+    <div class="text-xs text-slate-500">{{ items|length }} item(s)</div>
+  </div>
+
+  <div class="mt-6 space-y-3">
+    {% if not items %}
+      <div class="rounded-xl p-6 soft-border bg-slate-900/30 text-sm text-slate-400">
+        Empty. Use the Ask tab.
+      </div>
+    {% else %}
+      {% for it in items %}
+        <div class="rounded-xl p-4 soft-border bg-slate-900/30 flex items-start justify-between gap-4">
+          <a class="min-w-0 block" href="{{ url_for('history_detail', history_id=it.id) }}">
+            <div class="text-sm font-semibold truncate">{{ it.question }}</div>
+            <div class="text-xs text-slate-500 mt-1">{{ it.created_at }}</div>
+          </a>
+
+          <form method="post" action="{{ url_for('delete_history', history_id=it.id) }}"
+                onsubmit="return confirm('Delete this history item?');">
+            <button class="rounded-lg px-3 py-2 text-xs font-semibold soft-border glass hover:bg-red-500/10 hover:border-red-500/30 transition">
+              Delete
+            </button>
+          </form>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

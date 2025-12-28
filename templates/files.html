@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+  <section class="lg:col-span-2 glass rounded-2xl p-6 soft-border shadow-glow">
+    <h2 class="text-lg font-semibold">Upload</h2>
+    <p class="text-sm text-slate-400 mt-1">
+      TXT / DOCX / PDF. Filename is what gets embedded into every chunk (editable).
+    </p>
+
+    <form class="mt-6 space-y-4" method="post" action="{{ url_for('upload_file') }}" enctype="multipart/form-data">
+      <div>
+        <label class="block text-sm text-slate-300 mb-2">File</label>
+        <input id="fileInput" type="file" name="file" required
+               class="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0
+                      file:text-sm file:font-semibold file:bg-indigo-600/20 file:text-indigo-200
+                      hover:file:bg-indigo-600/30
+                      rounded-lg soft-border glass px-3 py-2" />
+        <div class="text-xs text-slate-500 mt-2">Max 200MB. Large PDFs will be slow because extraction is slow.</div>
+      </div>
+
+      <div>
+        <label class="block text-sm text-slate-300 mb-2">File name (stored + embedded)</label>
+        <input id="fileNameInput" type="text" name="file_name" required
+               placeholder="Example: Pathology Notes 2024"
+               class="w-full rounded-lg px-3 py-2 text-sm glass soft-border focus:outline-none focus:ring-2 focus:ring-indigo-500/40" />
+        <div class="text-xs text-slate-500 mt-2">Default is the uploaded filename. Edit it if you want cleaner sources.</div>
+      </div>
+
+      <button type="submit"
+              class="w-full rounded-xl bg-indigo-600/25 hover:bg-indigo-600/35 transition soft-border px-4 py-3 text-sm font-semibold">
+        Upload & Index
+      </button>
+    </form>
+
+    <script>
+      const fileInput = document.getElementById('fileInput');
+      const fileNameInput = document.getElementById('fileNameInput');
+
+      fileInput.addEventListener('change', () => {
+        const f = fileInput.files && fileInput.files[0];
+        if (!f) return;
+        if (!fileNameInput.value.trim()) {
+          fileNameInput.value = f.name;
+        }
+      });
+    </script>
+  </section>
+
+  <section class="lg:col-span-3 glass rounded-2xl p-6 soft-border">
+    <div class="flex items-center justify-between gap-3">
+      <h2 class="text-lg font-semibold">Uploaded files</h2>
+      <div class="text-xs text-slate-500">{{ files|length }} file(s)</div>
+    </div>
+
+    {% if last_report %}
+      <div class="mt-5 rounded-xl p-4 soft-border bg-slate-900/40">
+        <div class="text-sm font-semibold text-slate-200">Last upload report</div>
+        <div class="mt-2 text-sm text-slate-300 space-y-1">
+          <div><span class="text-slate-500">Name:</span> {{ last_report.file_name }}</div>
+          <div><span class="text-slate-500">Type:</span> {{ last_report.file_type }}</div>
+          <div><span class="text-slate-500">Pages:</span> {{ last_report.num_pages or "—" }}</div>
+          <div><span class="text-slate-500">Chunks:</span> {{ last_report.num_chunks }}</div>
+          <div><span class="text-slate-500">Stored:</span> {{ last_report.storage_path }}</div>
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="mt-6 space-y-3">
+      {% if not files %}
+        <div class="rounded-xl p-6 soft-border bg-slate-900/30 text-sm text-slate-400">
+          Nothing uploaded. Upload something first.
+        </div>
+      {% else %}
+        {% for f in files %}
+          <div class="rounded-xl p-4 soft-border bg-slate-900/30 flex items-start justify-between gap-4">
+            <div>
+              <div class="font-semibold">{{ f.file_name }}</div>
+              <div class="text-xs text-slate-400 mt-1">
+                {{ f.file_type|upper }} • {{ (f.size_bytes / (1024*1024))|round(2) }} MB •
+                chunks: {{ f.num_chunks }}{% if f.num_pages %} • pages: {{ f.num_pages }}{% endif %}
+              </div>
+              <div class="text-xs text-slate-500 mt-1">Original: {{ f.original_filename }}</div>
+            </div>
+
+            <form method="post" action="{{ url_for('delete_file', file_id=f.id) }}"
+                  onsubmit="return confirm('Delete this file and all its indexed chunks?');">
+              <button class="rounded-lg px-3 py-2 text-xs font-semibold soft-border glass hover:bg-red-500/10 hover:border-red-500/30 transition">
+                Remove
+              </button>
+            </form>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </section>
+</div>
+
+{% endblock %}
