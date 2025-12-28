@@ -82,8 +82,8 @@ pip install -r requirements.txt
 
 ```bash
 OPENROUTER_API_KEY=your_key_here
-OPENROUTER_HTTP_REFERER=http://localhost:5000 (not neccessary)
-OPENROUTER_X_TITLE=Simple RAG App (not neccessary)
+OPENROUTER_HTTP_REFERER=http://localhost:5000 # not neccessary
+OPENROUTER_X_TITLE=Simple RAG App # not neccessary
 ```
 
 ### Run
